@@ -1,63 +1,68 @@
 plugins {
-    id 'java-library'
-    id 'io.qameta.allure' version '2.11.2'
+    id 'java'
+    id 'io.qameta.allure' version "2.12.0"
+}
+
+group = 'ru.example'
+version = '1.0-SNAPSHOT'
+
+allure {
+    report {
+        version.set("2.29.0")
+    }
+    adapter {
+        aspectjWeaver.set(true)
+        frameworks {
+            junit5 {
+                adapterVersion.set("2.29.0")
+            }
+        }
+    }
 }
 
 repositories {
     mavenCentral()
 }
 
-def aspectjWeaverVersion = "1.9.22",
-    selenideVersion = "6.13.0",
-    restAssuredVersion = "5.3.0",
-    allureVersion = "2.21.0",
-    junitVersion = "5.9.3",
-    slf4jVersion = "2.0.7",
-    owner = "1.0.12"
-
-allure {
-    report {
-        version.set(allureVersion)
-    }
-    adapter {
-        aspectjWeaver.set(true)
-        frameworks {
-            junit5 {
-                adapterVersion.set(allureVersion)
-            }
-        }
-    }
-}
-
 dependencies {
-    testImplementation "org.aspectj:aspectjweaver:$aspectjWeaverVersion"
-    testImplementation "com.codeborne:selenide:$selenideVersion"
-    testImplementation "io.qameta.allure:allure-selenide:$allureVersion"
-    testImplementation "io.appium:java-client:8.3.0"
-    testImplementation "io.rest-assured:rest-assured:$restAssuredVersion"
-    testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
-    testImplementation "org.slf4j:slf4j-simple:$slf4jVersion"
-    testImplementation "org.aeonbits.owner:owner:$owner"
+    testImplementation(
+            platform("org.junit:junit-bom:5.13.4"),
+            "org.junit.jupiter:junit-jupiter",
+            "org.junit.platform:junit-platform-launcher",
+            platform("io.rest-assured:rest-assured-bom:5.5.6"),
+            "io.rest-assured:rest-assured",
+            "io.rest-assured:json-schema-validator",
+            platform("io.qameta.allure:allure-bom:2.29.1"),
+            "io.qameta.allure:allure-junit5",
+            "io.qameta.allure:allure-rest-assured",
+            "io.qameta.allure:allure-selenide",
+            "com.codeborne:selenide:7.10.0",
+            'org.aeonbits.owner:owner:1.0.12',
+            'io.appium:java-client:10.0.0'
+    )
+    testRuntimeOnly "org.slf4j:slf4j-simple:2.0.17"
 }
 
-tasks.withType(Test) {
+tasks.withType(Test).configureEach {
     useJUnitPlatform()
     systemProperties(System.getProperties())
     testLogging {
         lifecycle {
-            events "started", "skipped", "failed", "standard_error", "standard_out"
+            events "started", "passed", "skipped", "failed", "standard_error", "standard_out"
             exceptionFormat "short"
         }
     }
 }
 
-task android(type: Test) {
+tasks.register('android', Test) {
+    systemProperty "platform", "android"
     useJUnitPlatform {
         includeTags("android")
     }
 }
 
-task ios(type: Test) {
+tasks.register('ios', Test) {
+    systemProperty "platform", "ios"
     useJUnitPlatform {
         includeTags("ios")
     }

@@ -1,12 +1,13 @@
 package config;
 
-import io.appium.java_client.internal.Config;
+
+import org.aeonbits.owner.Config;
 
 @Config.LoadPolicy(Config.LoadType.MERGE)
 @Config.Sources({
         "classpath:user.properties"
 })
-public class UserConfig extends Config {
+public interface UserConfig extends Config {
 
     @Key("user")
     String user();
