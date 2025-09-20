@@ -16,9 +16,11 @@ import static com.codeborne.selenide.Selenide.open;
 public class TestBase {
     @BeforeAll
     static void beforeAll() {
+        System.setProperty("platform", System.getProperty("platform", "android"));
+
         Configuration.browser = BrowserstackDriver.class.getName();
         Configuration.browserSize = null;
-        //Configuration.timeout = 30000;
+        Configuration.timeout = 30000;
         //Configuration.pageLoadStrategy = "none"; // чтобы не ждать загрузку страниц (актуально для mobile)
     }
 

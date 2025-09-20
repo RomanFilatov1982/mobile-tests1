@@ -12,7 +12,8 @@ def aspectjWeaverVersion = "1.9.22",
     restAssuredVersion = "5.3.0",
     allureVersion = "2.21.0",
     junitVersion = "5.9.3",
-    slf4jVersion = "2.0.7"
+    slf4jVersion = "2.0.7",
+    owner = "1.0.12"
 
 allure {
     report {
@@ -29,24 +30,35 @@ allure {
 }
 
 dependencies {
-    testImplementation(
-            "org.aspectj:aspectjweaver:$aspectjWeaverVersion",
-            "com.codeborne:selenide:$selenideVersion",
-            "io.qameta.allure:allure-selenide:$allureVersion",
-            "io.appium:java-client:8.3.0",
-            "io.rest-assured:rest-assured:$restAssuredVersion",
-            "org.junit.jupiter:junit-jupiter:$junitVersion",
-            "org.slf4j:slf4j-simple:$slf4jVersion"
-    )
+    testImplementation "org.aspectj:aspectjweaver:$aspectjWeaverVersion"
+    testImplementation "com.codeborne:selenide:$selenideVersion"
+    testImplementation "io.qameta.allure:allure-selenide:$allureVersion"
+    testImplementation "io.appium:java-client:8.3.0"
+    testImplementation "io.rest-assured:rest-assured:$restAssuredVersion"
+    testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
+    testImplementation "org.slf4j:slf4j-simple:$slf4jVersion"
+    testImplementation "org.aeonbits.owner:owner:$owner"
 }
 
 tasks.withType(Test) {
     useJUnitPlatform()
-
+    systemProperties(System.getProperties())
     testLogging {
         lifecycle {
             events "started", "skipped", "failed", "standard_error", "standard_out"
             exceptionFormat "short"
         }
+    }
+}
+
+task android(type: Test) {
+    useJUnitPlatform {
+        includeTags("android")
+    }
+}
+
+task ios(type: Test) {
+    useJUnitPlatform {
+        includeTags("ios")
     }
 }
